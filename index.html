@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box {
+            width: 350px;
+            height: 350px;
+            margin: 100px;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+        .big {
+            display: none;
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            top: 0;
+            left: 360px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+        }
+        .big img{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .small {
+            position: relative;
+        }
+        .mask {
+            display: none;
+            width: 175px;
+            height: 175px;
+            background: rgba(255,255,0,0.4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="small">
+            <img src="images/001.jpg" alt=""/>
+            <div class="mask"></div>
+        </div>
+        <div class="big">
+            <img src="images/0001.jpg" alt=""/>
+        </div>
+    </div>
+<script>
+    //需求：当鼠标放在小盒子上时，让大盒子里面的图片等比例移动
+    //步骤：
+     /*1：鼠标放上去显示盒子，移开隐藏盒子
+     * 2：老三步和新五步（黄盒子mask跟随鼠标移动）
+     * 3：右侧的大图片等比例移动*/
+    var box = document.getElementsByClassName("box")[0];
+    var small = box.children[0];
+    var mask = box.children[0].children[1];
+    var big = box.children[1];
+    var bigImg = big.children[0];
+    small.onmouseenter = function () {
+        mask.style.display = "block";
+        big.style.display = "block";
+    }
+    small.onmouseleave = function () {
+        mask.style.display = "none";
+        big.style.display = "none";
+    }
+    small.onmousemove = function (event) {
+        event = event||window.event;
+        var pageX = event.pageX||scroll().left+ event.clientX;
+        var pageY = event.pageY||scroll().top + event.clientY;
+        var targetX = pageX-box.offsetLeft - mask.offsetWidth/2;
+        var targetY = pageY-box.offsetTop - mask.offsetHeight/2;
+        if(targetX<0){
+            targetX = 0;
+        }else if(targetX>box.offsetWidth-mask.offsetWidth){
+            targetX = box.offsetWidth-mask.offsetWidth;
+        }
+        if(targetY<0){
+            targetY = 0;
+        }else if(targetY>box.offsetHeight-mask.offsetHeight){
+            targetY = box.offsetHeight-mask.offsetHeight;
+        }
+        mask.style.left = targetX + "px";
+        mask.style.top = targetY + "px";
+        var bili = bigImg.offsetWidth/small.offsetWidth;
+        var xx = bili*targetX;
+        var yy = bili*targetY;
+        bigImg.style.left = -xx + "px";
+        bigImg.style.top = -yy + "px";
+    }
+    function scroll(){
+        return {
+            "top":window.pageYOffset||document.documentElement.scrollTop
+            ||document.body.scrollTop,
+            "left":window.pageXOffset||document.documentElement.scrollLeft
+            ||document.body.scrollLeft
+        }
+    }
+</script>
+</body>
+</html>
